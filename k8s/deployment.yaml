@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: test-app
+  name: test-app
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: test-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: test-app
+      containers:
+        - name: php
+          image: my-php-container
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 50m
+              memory: 512Mi
+            limits:
+              cpu: '2'
+              memory: 1Gi
+        - name: php-fpm-monitoring
+          image: hipages/php-fpm_exporter
+          imagePullPolicy: Always
+          env:
+            - name: PHP_FPM_SCRAPE_URI
+              value: 'tcp://127.0.0.1:9000/status'
+          resources:
+            requests:
+              cpu: 30m
+              memory: 256Mi
+            limits:
+              cpu: '1'
+              memory: 1Gi
